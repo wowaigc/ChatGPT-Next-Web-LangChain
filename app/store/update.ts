@@ -116,7 +116,7 @@ export const useUpdateStore = createPersistStore(
                           Locale.Settings.Update.FoundUpdate(`${remoteId}`);
                         // Show a notification for the new version using Tauri
                         window.__TAURI__?.notification.sendNotification({
-                          title: "NextChat",
+                          title: "I.AI Chat",
                           body: updateMessage,
                           icon: `${ChatGptIcon.src}`,
                           sound: "Default",

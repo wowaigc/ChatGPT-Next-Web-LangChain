@@ -7,9 +7,9 @@
 
 [![Web][Web-image]][web-url]
 
-[网页版](https://chat-gpt-next-web-gosuto.vercel.app/) / [反馈](https://github.com/Hk-Gosuto/ChatGPT-Next-Web-LangChain/issues)
+[网页版](https://n3xt.chat) / [反馈](https://github.com/Hk-Gosuto/ChatGPT-Next-Web-LangChain/issues) / [Discord](https://discord.gg/zTwDFtSC)
 
-[web-url]: https://chat-gpt-next-web-gosuto.vercel.app/
+[web-url]: https://n3xt.chat/
 [download-url]: https://github.com/Hk-Gosuto/ChatGPT-Next-Web-LangChain/releases
 [Web-image]: https://img.shields.io/badge/Web-PWA-orange?logo=microsoftedge
 [Windows-image]: https://img.shields.io/badge/-Windows-blue?logo=windows
@@ -20,6 +20,11 @@
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/Hk-Gosuto/ChatGPT-Next-Web-LangChain)
 
+</div>
+
+> [!WARNING]
+> 本项目插件功能基于 [OpenAI API 函数调用](https://platform.openai.com/docs/guides/function-calling) 功能实现，转发 GitHub Copilot 接口或类似实现的模拟接口并不能正常调用插件功能！
+
 ![cover](./docs/images/gpt-vision-example.jpg)
 
 ![plugin-example](./docs/images/plugin-example.png)
@@ -28,14 +33,17 @@
 
 ![dall-e-plugin](./docs/images/dalle-plugin-example.png)
 
-</div>
-
 ## 主要功能
 
 - 除插件工具外，与原项目保持一致 [ChatGPT-Next-Web 主要功能](https://github.com/Yidadaa/ChatGPT-Next-Web#主要功能)
 
+- 支持 OpenAI TTS（文本转语音）https://github.com/Hk-Gosuto/ChatGPT-Next-Web-LangChain/issues/208
+
+- 支持语音输入，需要使用 HTTPS 访问 https://github.com/Hk-Gosuto/ChatGPT-Next-Web-LangChain/issues/208
+
 - 支持 GPT-4V(视觉) 模型
-  - 需要配置对象存储服务，请参考 [对象存储服务配置指南](./docs/s3-oss.md) 配置
+  - ~~需要配置对象存储服务，请参考 [对象存储服务配置指南](./docs/s3-oss.md) 配置~~
+  - 已同步上游仓库视觉模型调用方式（压缩图片），这里还是会有撑爆 LocalStorage 的风险 https://github.com/Hk-Gosuto/ChatGPT-Next-Web-LangChain/issues/77#issuecomment-1846410078 ，后面如果出现类似问题会再适配对象存储来存储图像。
   
 - 基于 [LangChain](https://github.com/hwchase17/langchainjs) 实现的插件功能，目前支持以下插件，未来会添加更多
   - 搜索（优先级：`GoogleCustomSearch > SerpAPI > BingSerpAPI > ChooseSearchEngine > DuckDuckGo`）
@@ -80,7 +88,9 @@
     
   - 网络请求
     - [WebBrowser](https://api.js.langchain.com/classes/langchain_tools_webbrowser.WebBrowser.html)
+      - 需要使用 `text-embedding-ada-002` 嵌入模型
     - PDFBrowser
+      - 需要使用 `text-embedding-ada-002` 嵌入模型
       - ⚠ 仅在非 vercel 环境部署时可用 ⚠
   
   - 其它
@@ -95,13 +105,17 @@
       - StableDiffusion 插件需要配置对象存储服务，请参考 [对象存储服务配置指南](./docs/s3-oss.md) 配置
     - Arxiv
   
-- 支持 Gemini-Pro 模型（同步上游仓库并修改接口为流式传输）
+- 支持 gemini-pro, gemini-pro-vision 模型
   - 以下功能目前还不支持
     - **插件功能**
   - 如何启用
     - 配置密钥 `GOOGLE_API_KEY` ，key 可以在这里获取：https://ai.google.dev/tutorials/setup
     - 配置自定义接口地址（可选） `GOOGLE_BASE_URL`，可以使用我的这个项目搭建一个基于 vercel 的代理服务：[google-gemini-vercel-proxy](https://github.com/Hk-Gosuto/google-gemini-vercel-proxy)
   - 常见问题参考：[Gemini Prompting FAQs](https://js.langchain.com/docs/integrations/chat/google_generativeai#gemini-prompting-faqs)
+  - ~~gemini-pro-vision 模型需要配置对象存储服务，请参考 [对象存储服务配置指南](./docs/s3-oss.md) 配置~~
+  - ⚠ gemini-pro-vision 注意事项 https://github.com/Hk-Gosuto/ChatGPT-Next-Web-LangChain/issues/203 ：
+    - 每次对话必须包含图像数据，不然会出现 `Add an image to use models/gemini-pro-vision, or switch your model to a text model.` 错误。
+    - 只支持单轮对话，多轮对话会出现 `Multiturn chat is not enabled for models/gemini-pro-vision` 错误。
   
 - 非 Vercel 运行环境下支持本地存储
 
@@ -126,12 +140,15 @@
 
   最新版本中已经移除上面两个模型。
 
-- [ ] 支持添加自定义插件
+- [x] 支持语音输入 https://github.com/Hk-Gosuto/ChatGPT-Next-Web-LangChain/issues/208
 
-## 最新动态
+- [ ] 支持其他类型文件上传 https://github.com/Hk-Gosuto/ChatGPT-Next-Web-LangChain/issues/77
 
-- 🚀 v2.9.5 正式版本发布
-- 🚀 v2.9.1-plugin-preview 预览版发布。
+- [ ] 支持 Azure Storage https://github.com/Hk-Gosuto/ChatGPT-Next-Web-LangChain/issues/217
+
+- [ ] 支持 Fooocus-API 插件 https://github.com/Hk-Gosuto/ChatGPT-Next-Web-LangChain/issues/58
+
+- [ ] 支持在 UI 配置插件需要的 Key https://github.com/Hk-Gosuto/ChatGPT-Next-Web-LangChain/issues/70
 
 ## 开始使用
 
@@ -199,9 +216,9 @@ OpenAI 接口代理 URL，如果你手动配置了 openai 接口代理，请填�
 
 如果你不想让用户使用 GPT-4，将此环境变量设置为 1 即可。
 
-### `HIDE_BALANCE_QUERY` （可选）
+### `ENABLE_BALANCE_QUERY` （可选）
 
-如果你不想让用户查询余额，将此环境变量设置为 1 即可。
+如果你想启用余额查询功能，将此环境变量设置为 1 即可。
 
 ### `GOOGLE_API_KEY` （可选）
 
@@ -229,6 +246,13 @@ Azure 密钥。
 
 Azure Api 版本，你可以在这里找到：[Azure 文档](https://learn.microsoft.com/en-us/azure/ai-services/openai/reference#chat-completions)。
 
+### `NEXT_PUBLIC_DISABLE_AUTOGENERATETITLE` （可选）
+
+如果你不想让用户使用自动生成标题功能，将此环境变量设置为 1 即可。
+
+### `NEXT_PUBLIC_DISABLE_SENDMEMORY` （可选）
+
+如果你不想让用户使用历史摘要功能，将此环境变量设置为 1 即可。
 
 ## 部署
 
@@ -276,12 +300,6 @@ docker run -d -p 3000:3000 \
 <a href="https://github.com/Hk-Gosuto/ChatGPT-Next-Web-LangChain/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Hk-Gosuto/ChatGPT-Next-Web-LangChain" />
 </a>
-
-## 截图
-
-![Settings](./docs/images/settings.png)
-
-![More](./docs/images/more.png)
 
 ## 捐赠
 

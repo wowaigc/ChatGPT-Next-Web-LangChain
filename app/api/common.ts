@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSideConfig } from "../config/server";
-import { DEFAULT_MODELS, OPENAI_BASE_URL, GEMINI_BASE_URL } from "../constant";
+import { DEFAULT_MODELS, OPENAI_BASE_URL } from "../constant";
 import { collectModelTable } from "../utils/model";
 import { makeAzurePath } from "../azure";
 
@@ -65,15 +65,26 @@ export async function requestOpenai(req: NextRequest) {
     path = makeAzurePath(path, serverConfig.azureApiVersion);
   }
 
-  const clonedBody = await req.text();
-  const jsonBody = JSON.parse(clonedBody) as { model?: string };
+  let jsonBody;
+  let clonedBody;
+  const contentType = req.headers.get("Content-Type");
+  if (
+    req.method !== "GET" &&
+    req.method !== "HEAD" &&
+    contentType?.includes("json")
+  ) {
+    clonedBody = await req.text();
+    jsonBody = JSON.parse(clonedBody) as { model?: string };
+  } else {
+    clonedBody = req.body;
+  }
   if (serverConfig.isAzure) {
-    baseUrl = `${baseUrl}/${jsonBody.model}`;
+    baseUrl = `${baseUrl}/${jsonBody?.model}`;
   }
   const fetchUrl = `${baseUrl}/${path}`;
   const fetchOptions: RequestInit = {
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": contentType ?? "application/json",
       "Cache-Control": "no-store",
       [authHeaderName]: authValue,
       ...(serverConfig.openaiOrgId && {
